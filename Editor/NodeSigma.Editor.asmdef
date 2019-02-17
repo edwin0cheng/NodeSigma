@@ -1,0 +1,15 @@
+{
+    "name": "NodeSigma.Editor",
+    "references": [
+        "Unity.ShaderGraph.Editor",
+        "NodeSigma.Runtime"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}
