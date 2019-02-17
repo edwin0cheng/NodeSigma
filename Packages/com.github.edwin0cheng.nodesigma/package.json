@@ -1,0 +1,11 @@
+{
+    "name": "com.github.edwin0cheng.nodesigma",
+    "displayName": "Node Sigma",
+    "version": "0.1.0",
+    "unity": "2018.3",
+    "description": "https://github.com/edwin0cheng/NodeSigma",
+    "dependencies": { 
+        "com.unity.shadergraph": "4.9.0-preview", 
+        "com.unity.render-pipelines.lightweight": "4.9.0-preview"
+    }
+}

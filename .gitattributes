@@ -1,0 +1,15 @@
+## Unity ##
+
+*.cs diff=csharp text
+*.cginc text
+*.shader text
+
+*.mat eol=lf
+*.anim eol=lf
+*.unity eol=lf
+*.prefab eol=lf
+*.physicsMaterial2D eol=lf
+*.physicsMaterial eol=lf
+*.asset eol=lf
+*.meta eol=lf
+*.controller eol=lf
