@@ -22,4 +22,4 @@ Add the following line to the dependencies section in the package manifest file 
 | Nodes             | Notes  |
 :-------------------------:|:-------------------------:
 Edge Detection |<img src="https://i.imgur.com/SeTLqms.png" width="300">
-Depth Normals Texture | As LWRP do not support Depth Normals Texture, you need to add `DephtNormalsRenderPass` in your camera game object
+Depth Normals Texture | As LWRP do not support Depth Normals Texture, A `DephtNormalsRenderPass` is required to add in the game object of main camera
