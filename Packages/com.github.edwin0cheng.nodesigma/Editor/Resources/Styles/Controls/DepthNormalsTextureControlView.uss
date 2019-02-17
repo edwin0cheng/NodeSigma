@@ -1,0 +1,12 @@
+DepthNormalsTextureControlView {
+    flex-direction: row;
+    padding-left: 8;
+    padding-right: 8;
+    padding-top: 4;
+    padding-bottom: 4;
+}
+
+DepthNormalsTextureControlView > #ErrorText {
+    color: #FF0000;
+}
+

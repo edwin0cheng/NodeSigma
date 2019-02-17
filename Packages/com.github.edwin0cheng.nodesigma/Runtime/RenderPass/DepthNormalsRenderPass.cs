@@ -5,6 +5,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Experimental.Rendering.LightweightPipeline;
 
+
 namespace NodeSigma.RenderPass.Runtime
 {
     // TODO(edwin)
@@ -15,24 +16,26 @@ namespace NodeSigma.RenderPass.Runtime
     // because the current implementation of ShaderGraph use `m_SceneResources.camera.Render()` directly.
     // (See PreviewManager::RenderPreview in SRP github)
     // It is in the Unity C++ side which i don't know any render pass would affect it.
-
     [ExecuteInEditMode]
     [AddComponentMenu("NodeSigma/Render Pass/Depth Normals Render Pass")]
     public class DepthNormalsRenderPass : MonoBehaviour, IAfterDepthPrePass //IBeforeRender //,
     {
         public LayerMask renderLayerMask;
         private DepthNormalsRenderPassImpl pass;
+        private bool IsEditorOnly = false;
 
-        public ScriptableRenderPass GetPassToEnqueue(RenderTextureDescriptor baseDescriptor, RenderTargetHandle depthAttachmentHandle)
         // public ScriptableRenderPass GetPassToEnqueue(RenderTextureDescriptor baseDescriptor, RenderTargetHandle colorHandle, RenderTargetHandle depthHandle, ClearFlag clearFlag)
-        {
+        public ScriptableRenderPass GetPassToEnqueue(RenderTextureDescriptor baseDescriptor, RenderTargetHandle depthAttachmentHandle)
+        {            
             if (pass == null) pass = new DepthNormalsRenderPassImpl(baseDescriptor, renderLayerMask);
 
-#if UNITY_EDITOR
+            pass.isEnabled = this.enabled;
+
+#if UNITY_EDITOR            
             // If it is not a Game Camera, remove it now
             // RegisterRenderPass will create another render pass to it in next frame
-            if( GetComponent<Camera>().cameraType != CameraType.Game )
-            {
+            if(IsEditorOnly) {
+                RenderPipeline.beginFrameRendering -= RegisterRenderPass;
                 DestroyImmediate(this);
             }
 #endif
@@ -50,15 +53,15 @@ namespace NodeSigma.RenderPass.Runtime
 #if UNITY_EDITOR
         void OnEnable()
         {
-            if(GetComponent<Camera>().cameraType == CameraType.Game)
+            if(!this.IsEditorOnly)
             {
                 RenderPipeline.beginFrameRendering += RegisterRenderPass;
             }            
         }
-
+        
         void OnDisable()
         {
-            if(GetComponent<Camera>().cameraType == CameraType.Game)
+            if(!this.IsEditorOnly)
             {
                 // Make sure we remove it in sceneView camera
                 RenderPipeline.beginFrameRendering -= RegisterRenderPass;
@@ -74,6 +77,7 @@ namespace NodeSigma.RenderPass.Runtime
                 {
                     var otherPass = c.gameObject.AddComponent<DepthNormalsRenderPass>();
                     otherPass.renderLayerMask = this.renderLayerMask;
+                    otherPass.IsEditorOnly = true;                    
                 }                
             }
         }
@@ -89,6 +93,8 @@ namespace NodeSigma.RenderPass.Runtime
         private RenderTextureDescriptor m_baseDescriptor;
         private RenderTargetHandle m_PerObjectRenderTextureHandle;
         private FilterRenderersSettings m_PerObjectFilterSettings;
+
+        internal bool isEnabled = true;
 
         public DepthNormalsRenderPassImpl(RenderTextureDescriptor baseDescriptor, LayerMask renderLayerMask)
         {
@@ -120,6 +126,8 @@ namespace NodeSigma.RenderPass.Runtime
 
         public override void Execute(ScriptableRenderer renderer, ScriptableRenderContext context, ref RenderingData renderingData)
         {
+            if(!isEnabled) return;
+
             CommandBuffer cmd = CommandBufferPool.Get(k_DepthNormals);
             using (new ProfilingSample(cmd, k_DepthNormals))
             {
