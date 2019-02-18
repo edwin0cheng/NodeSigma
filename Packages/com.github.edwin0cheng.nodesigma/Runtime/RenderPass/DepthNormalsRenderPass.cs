@@ -22,7 +22,9 @@ namespace NodeSigma.RenderPass.Runtime
     {
         public LayerMask renderLayerMask;
         private DepthNormalsRenderPassImpl pass;
-        private bool IsEditorOnly = false;
+        
+        [System.NonSerialized]
+        public bool IsEditorOnly = false;
 
         // public ScriptableRenderPass GetPassToEnqueue(RenderTextureDescriptor baseDescriptor, RenderTargetHandle colorHandle, RenderTargetHandle depthHandle, ClearFlag clearFlag)
         public ScriptableRenderPass GetPassToEnqueue(RenderTextureDescriptor baseDescriptor, RenderTargetHandle depthAttachmentHandle)
@@ -30,15 +32,6 @@ namespace NodeSigma.RenderPass.Runtime
             if (pass == null) pass = new DepthNormalsRenderPassImpl(baseDescriptor, renderLayerMask);
 
             pass.isEnabled = this.enabled;
-
-#if UNITY_EDITOR            
-            // If it is not a Game Camera, remove it now
-            // RegisterRenderPass will create another render pass to it in next frame
-            if(IsEditorOnly) {
-                RenderPipeline.beginFrameRendering -= RegisterRenderPass;
-                DestroyImmediate(this);
-            }
-#endif
 
             return pass;
         }
@@ -50,39 +43,11 @@ namespace NodeSigma.RenderPass.Runtime
             }
         }
 
-#if UNITY_EDITOR
-        void OnEnable()
+        void Start()
         {
-            if(!this.IsEditorOnly)
-            {
-                RenderPipeline.beginFrameRendering += RegisterRenderPass;
-            }            
-        }
-        
-        void OnDisable()
-        {
-            if(!this.IsEditorOnly)
-            {
-                // Make sure we remove it in sceneView camera
-                RenderPipeline.beginFrameRendering -= RegisterRenderPass;
-            }
-        }
 
-        void RegisterRenderPass(Camera[] cameras)
-        {
-            foreach (var c in cameras)
-            {
-                var cameraPass = c.GetComponent<DepthNormalsRenderPass>();
-                if(cameraPass == null)
-                {
-                    var otherPass = c.gameObject.AddComponent<DepthNormalsRenderPass>();
-                    otherPass.renderLayerMask = this.renderLayerMask;
-                    otherPass.IsEditorOnly = true;                    
-                }                
-            }
         }
     }
-#endif
 
     public class DepthNormalsRenderPassImpl : ScriptableRenderPass
     {
