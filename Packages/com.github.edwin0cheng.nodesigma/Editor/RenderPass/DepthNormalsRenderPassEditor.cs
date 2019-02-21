@@ -7,14 +7,22 @@ using NodeSigma.RenderPass.Runtime;
 namespace NodeSigma.RenderPass.Editor
 {
 
+[InitializeOnLoad]
 [CustomEditor(typeof(DepthNormalsRenderPass))]
 public class DephtNormalsRenderPassEditor : UnityEditor.Editor 
 {
 
-     private static readonly string[] _dontIncludeMe = new string[]{"m_Script"};
+    private static readonly string[] _dontIncludeMe = new string[]{"m_Script"};
+
+    static DephtNormalsRenderPassEditor()
+    {
+        RenderPipeline.beginFrameRendering -= RegisterRenderPass;   
+        RenderPipeline.beginFrameRendering += RegisterRenderPass;
+    }
     
     void OnEnable()
     {
+        RenderPipeline.beginFrameRendering -= RegisterRenderPass;   
         RenderPipeline.beginFrameRendering += RegisterRenderPass;
     }
 
@@ -32,7 +40,7 @@ public class DephtNormalsRenderPassEditor : UnityEditor.Editor
         // serializedObject.ApplyModifiedProperties();
         base.OnInspectorGUI();
     }
-    DepthNormalsRenderPass GetMainCameraPass()
+    static DepthNormalsRenderPass GetMainCameraPass()
     {
         var go = GameObject.FindGameObjectWithTag("MainCamera");
 
@@ -40,7 +48,7 @@ public class DephtNormalsRenderPassEditor : UnityEditor.Editor
         return go.GetComponent<DepthNormalsRenderPass>();        
     }
 
-    void UnregisterRenderPass(Camera[] cameras)
+    static void UnregisterRenderPass(Camera[] cameras)
     {
         foreach (var c in cameras)
         {
@@ -52,7 +60,7 @@ public class DephtNormalsRenderPassEditor : UnityEditor.Editor
         }
     }
 
-    void RegisterRenderPass(Camera[] cameras)
+    static void RegisterRenderPass(Camera[] cameras)
     {
         var pass = GetMainCameraPass();
 
