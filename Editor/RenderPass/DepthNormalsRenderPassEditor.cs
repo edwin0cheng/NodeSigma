@@ -33,12 +33,9 @@ public class DephtNormalsRenderPassEditor : UnityEditor.Editor
 
     public override void OnInspectorGUI()
     {
-        // serializedObject.Update();
- 
-        // // DrawPropertiesExcluding(serializedObject, _dontIncludeMe);
- 
-        // serializedObject.ApplyModifiedProperties();
-        base.OnInspectorGUI();
+        serializedObject.Update(); 
+        DrawPropertiesExcluding(serializedObject, _dontIncludeMe); 
+        serializedObject.ApplyModifiedProperties();        
     }
     static DepthNormalsRenderPass GetMainCameraPass()
     {
@@ -75,6 +72,14 @@ public class DephtNormalsRenderPassEditor : UnityEditor.Editor
             var cameraPass = c.GetComponent<DepthNormalsRenderPass>();
             if(cameraPass == null && cameraPass != pass)
             {
+                // NOTE(edwin): 
+                // There is a bug that Camera.cameraType always returns 
+                // CameraType.Game even it is a SceneView camera
+                // So we check if the camera is in the same scene as the render pass
+                // to bypass it               
+                
+                if( c.gameObject.scene == pass.gameObject.scene) continue;
+
                 var otherPass = c.gameObject.AddComponent<DepthNormalsRenderPass>();
                 otherPass.renderLayerMask = pass.renderLayerMask;
                 otherPass.IsEditorOnly = true;                    
