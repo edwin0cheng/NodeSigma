@@ -19,7 +19,7 @@ Add the following line to the dependencies section in the package manifest file 
 
 ## Nodes
 
-| Nodes             | Notes  |
-:-------------------------:|:-------------------------:
-Edge Detection |<img src="https://i.imgur.com/SeTLqms.png" width="300">
-Depth Normals Texture | As LWRP do not support Depth Normals Texture, A `DephtNormalsRenderPass` is required to add in the game object of main camera
+| Name | Node            | Note  |
+:-------------------------:|:-------------------------:|:-------------------------:
+Edge Detection | <img src ="https://i.imgur.com/EEoSMbc.png" width="300"> |<img src="https://i.imgur.com/SeTLqms.png" width="300">
+Depth Normals Texture | <img src ="https://i.imgur.com/ZZ08Blh.png" width="300"> | As LWRP do not support Depth Normals Texture, A `DephtNormalsRenderPass` is required to add in the game object of main camera
